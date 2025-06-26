@@ -1,0 +1,28 @@
+BasedOnStyle: Google
+
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortFunctionsOnASingleLine: Empty
+BreakBeforeBraces: Attach
+IndentPPDirectives: BeforeHash
+NamespaceIndentation: All
+ReferenceAlignment: Right
+PointerAlignment: Right
+
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeInheritanceColon: false
+SpaceBeforeParens: ControlStatements
+
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignAfterOpenBracket: Align
+AlwaysBreakAfterReturnType: None
+BinPackArguments: false
+BinPackParameters: false
+
+SortIncludes: false
+IncludeBlocks: Preserve
+
+ColumnLimit: 120
+IndentCaseLabels: true
+AlignTrailingComments: true
+KeepEmptyLinesAtTheStartOfBlocks: false
