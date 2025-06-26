@@ -22,6 +22,7 @@ BinPackParameters: false
 SortIncludes: false
 IncludeBlocks: Preserve
 
+LineEnding: LF
 ColumnLimit: 120
 IndentCaseLabels: true
 AlignTrailingComments: true
