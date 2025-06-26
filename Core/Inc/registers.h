@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-extern volatile uint8_t last_error;
+extern volatile uint8_t  last_error;
 extern volatile uint16_t leds_data;
 extern volatile uint16_t led_mode_mask;
 extern volatile uint16_t custom_leds_data;
@@ -87,27 +87,21 @@ typedef enum reg_idx_t {
   REG_LAST_ERROR,           // 讀取最後錯誤
 } reg_idx_t;
 
-typedef enum ValueType {
-  UINT8,
-  UINT16,
-  POINTER_UINT8,
-  POINTER_UINT16,
-  POINTER_CALLBACK
-} ValueType_t;
+typedef enum ValueType { UINT8, UINT16, POINTER_UINT8, POINTER_UINT16, POINTER_CALLBACK } ValueType_t;
 
 typedef enum RegisterType { READ_ONLY, WRITE_ONLY, FULL_ACCESS } RegisterType_t;
 
 typedef union {
-  uint8_t u8;
+  uint8_t  u8;
   uint16_t u16;
-  void* ptr;
+  void*    ptr;
 } var_t;
 
 typedef struct reg_t {
-  uint8_t addr;
-  ValueType_t type;
+  uint8_t        addr;
+  ValueType_t    type;
   RegisterType_t reg_type;
-  var_t value;
+  var_t          value;
 
   uint8_t ptr_size;
   uint8_t _size;
@@ -121,13 +115,11 @@ typedef struct reg_t {
  * @param length If WRITE, input length; if READ, set output length
  * @return 0 on success, negative on error
  */
-typedef int (*CustomI2CReadWriteCallback_t)(reg_t* reg, RegisterType_t mode,
-                                            uint8_t* buffer, uint8_t* length);
+typedef int (*CustomI2CReadWriteCallback_t)(reg_t* reg, RegisterType_t mode, uint8_t* buffer, uint8_t* length);
 
-int led_i2c_callback(reg_t* reg, RegisterType_t mode, uint8_t* buffer,
-                     uint8_t* length);
-int threshold_i2c_callback(reg_t* reg, RegisterType_t mode, uint8_t* buffer,
-                           uint8_t* length);
+int led_i2c_callback(reg_t* reg, RegisterType_t mode, uint8_t* buffer, uint8_t* length);
+int threshold_i2c_callback(reg_t* reg, RegisterType_t mode, uint8_t* buffer, uint8_t* length);
+int last_error_i2c_callback(reg_t* reg, RegisterType_t mode, uint8_t* buffer, uint8_t* length);
 
 void register_init(void);
 

@@ -98,10 +98,9 @@ volatile reg_t g_i2c_reg_data[] = {
 
     [REG_VERSION]    = {.addr = REG_VERSION_ADDR, .type = UINT16, .reg_type = READ_ONLY, .value.u16 = VERSION},
     [REG_LAST_ERROR] = {.addr      = REG_LAST_ERROR_ADDR,
-                        .type      = POINTER_UINT8,
+                        .type      = POINTER_CALLBACK,
                         .reg_type  = READ_ONLY,
-                        .value.ptr = (uint8_t *)&last_error},
-};
+                        .value.ptr = (void *)last_error_i2c_callback}};
 
 const uint8_t g_i2c_reg_data_size = sizeof(g_i2c_reg_data) / sizeof(reg_t);
 
@@ -170,6 +169,15 @@ int threshold_i2c_callback(reg_t *reg, RegisterType_t mode, uint8_t *buffer, uin
     } break;
   }
 
+  return 0;
+}
+
+int last_error_i2c_callback(reg_t *reg, RegisterType_t mode, uint8_t *buffer, uint8_t *length) {
+  if (mode == READ_ONLY) {
+    *length    = 1;
+    buffer[0]  = last_error;
+    last_error = 0;
+  }
   return 0;
 }
 
