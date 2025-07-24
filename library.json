@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+  "name": "MK_IR_I2C",
+  "version": "1.0.0",
+  "description": "Library for MK_IR_I2C",
+  "keywords": ["Arduino", "MK_IR_I2C"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/a3510377/MK_IR_I2C"
+  },
+  "authors": [
+    {
+      "name": "a3510377",
+      "email": "a102009102009@gmail.com",
+      "url": "https://github.com/a3510377"
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "arduino",
+  "platforms": "*"
+}

@@ -21,7 +21,6 @@
 #include "adc.h"
 #include "dma.h"
 #include "i2c.h"
-#include "iwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -65,7 +64,7 @@ void update_LED(void);
 /* USER CODE BEGIN 0 */
 static int rx_busy_counter = 0;
 
-volatile uint8_t  last_error       = 0;
+volatile uint8_t last_error        = 0;
 volatile uint16_t led_mode_mask    = 0;
 volatile uint16_t custom_leds_data = 0;               // custom led value
 volatile uint16_t threshold_flag   = 0;               // threshold result
@@ -73,11 +72,11 @@ volatile uint16_t thresholds[16]   = {0};             // led threshold
 volatile uint16_t leds_data = 0, last_leds_data = 0;  // led value
 volatile uint16_t mux_data[16] = {0};                 // adc value
 
-volatile uint8_t  mux_index      = 0;  // current mux index
+volatile uint8_t mux_index       = 0;  // current mux index
 volatile uint32_t adc_dma_buffer = 0;  // current adc value
 
-static uint32_t         last_update_time = 0;
-static volatile uint8_t old_mux_index    = 0;
+static uint32_t last_update_time          = 0;
+static volatile uint8_t updated_mux_index = 0;
 /* USER CODE END 0 */
 
 /**
@@ -110,7 +109,6 @@ int main(void) {
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_ADC_Init();
-  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   if (HAL_ADC_Start_DMA(&hadc, (uint32_t *)&adc_dma_buffer, 1) != HAL_OK) {
     Error_Handler();
@@ -145,7 +143,7 @@ int main(void) {
       }
     }
 
-    if (old_mux_index == mux_index) {
+    if (mux_index == updated_mux_index) {
       mux_index = (mux_index + 1) % 16;
 
       // eq: GPIOA->BSRR = (0x0f << (16 + 1)) | ((mux_index & 0x0f) << 1);
@@ -157,7 +155,6 @@ int main(void) {
     }
 
     update_status();
-    HAL_IWDG_Refresh(&hiwdg);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -170,19 +167,18 @@ int main(void) {
  * @retval None
  */
 void SystemClock_Config(void) {
-  RCC_OscInitTypeDef       RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef       RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit     = {0};
+  RCC_OscInitTypeDef RCC_OscInitStruct   = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct   = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType        = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSI14 | RCC_OSCILLATORTYPE_LSI;
+  RCC_OscInitStruct.OscillatorType        = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSI14;
   RCC_OscInitStruct.HSIState              = RCC_HSI_ON;
   RCC_OscInitStruct.HSI14State            = RCC_HSI14_ON;
   RCC_OscInitStruct.HSICalibrationValue   = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.HSI14CalibrationValue = 16;
-  RCC_OscInitStruct.LSIState              = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState          = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource         = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL            = RCC_PLL_MUL12;
@@ -214,7 +210,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
     uint16_t value      = adc_dma_buffer;
     mux_data[mux_index] = value;
 
-    uint16_t mask = (1 << mux_index);
+    uint16_t mask = 1 << mux_index;
     if (value > thresholds[mux_index]) threshold_flag |= mask;
     else threshold_flag &= ~mask;
 
@@ -226,7 +222,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
       else leds_data &= ~mask;
     }
 
-    old_mux_index = mux_index;
+    updated_mux_index = mux_index;
   }
 }
 
